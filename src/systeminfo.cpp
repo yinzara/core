@@ -16,9 +16,9 @@ struct sysinfo memInfo;
 struct rusage r_usage;
 #endif
 #ifdef Q_OS_WIN
-#include "windows.h"
-#include "TCHAR.h"
-#include "pdh.h"
+#include "Windows.h"
+#include "tchar.h"
+#include "Pdh.h"
 #endif
 
 class SystemInfoPrivate
@@ -93,13 +93,13 @@ double SystemInfo::getCpuUsage() const
 #ifdef Q_OS_WIN
     PDH_HQUERY cpuQuery;
     PDH_HCOUNTER cpuTotal;
-    PdhOpenQuery(NULL, NULL, &cpuQuery);
-    PdhAddCounter(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
+    PdhOpenQuery(nullptr, NULL, &cpuQuery);
+    PdhAddCounter(cpuQuery, _T("\\Processor(_Total)\\% Processor Time"), NULL, &cpuTotal);
     PdhCollectQueryData(cpuQuery);
     QThread::sleep(1);
     PdhCollectQueryData(cpuQuery);
     PDH_FMT_COUNTERVALUE counterVal;
-    PdhGetFormattedCounterValue(cpuTotal, PDH_FMT_DOUBLE, NULL, &counterVal);
+    PdhGetFormattedCounterValue(cpuTotal, PDH_FMT_DOUBLE, nullptr, &counterVal);
     double result = counterVal.doubleValue;
     return result;
 #endif
