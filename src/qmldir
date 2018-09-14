@@ -1,2 +1,4 @@
 module QFlow.Core
 plugin core
+classname CorePlugin
+typeinfo plugins.qmltypes

@@ -34,5 +34,12 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     target_link_libraries(core Pdh)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 set(CORE_INSTALL_PATH "plugins/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
-install (TARGETS core DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
-install (FILES qmldir DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
+if(WIN32)
+    install(TARGETS core
+        RUNTIME DESTINATION ${CORE_INSTALL_PATH}
+        ARCHIVE DESTINATION lib
+        COMPONENT qflow)
+elseif()
+    install(TARGETS core DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
+endif()
+install (FILES qmldir plugins.qmltypes DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
