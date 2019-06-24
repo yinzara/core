@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.12.4)
 
 project(core)
 
@@ -35,6 +35,13 @@ target_link_libraries(core
     Qt5::Core
     Qt5::Qml
     $<$<BOOL:${WIN32}>:Pdh>
+    )
+
+set_target_properties(core PROPERTIES
+    QMLModulePath ${CMAKE_INSTALL_PREFIX}/modules
+    )
+set_target_properties(core PROPERTIES
+    EXPORT_PROPERTIES "QMLModulePath"
     )
 
 set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
