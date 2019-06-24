@@ -11,12 +11,9 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-file(GLOB_RECURSE DATABASE_SRCS
-    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-    )
-add_library(core SHARED ${DATABASE_SRCS})
+file(GLOB_RECURSE CORE_SOURCES *.cpp)
+file(GLOB_RECURSE CORE_HEADERS *.h)
+add_library(core SHARED ${CORE_SOURCES})
 set_target_properties(core PROPERTIES CXX_STANDARD 14)
 target_compile_definitions(core PUBLIC CORE_LIBRARY)
 # Doesn't work because it includes the project prefix for some reason...
@@ -47,5 +44,9 @@ install(TARGETS core
     ARCHIVE DESTINATION lib
     COMPONENT qflow
     )
-install(EXPORT ${PACKAGE_NAME}Config DESTINATION lib/cmake/${PACKAGE_NAME})
+install(FILES ${CORE_HEADERS} DESTINATION include COMPONENT qflow)
+install(EXPORT ${PACKAGE_NAME}Config
+    NAMESPACE QFlow::
+    DESTINATION lib/cmake/${PACKAGE_NAME}
+    )
 install(FILES qmldir plugins.qmltypes DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
