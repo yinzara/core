@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(core)
 
+set(PACKAGE_NAME "QFlowCore")
+
 set(QT_MIN_VERSION "5.6.0")
 find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED
     Core
@@ -27,7 +29,7 @@ set_target_properties(core PROPERTIES
     )
 target_include_directories(core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:include/${PACKAGE_NAME}>
     )
 target_link_libraries(core
     Qt5::Core
@@ -37,14 +39,13 @@ target_link_libraries(core
 
 set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
 
-set(PACKAGE_NAME "QFlowCore")
 install(TARGETS core
     EXPORT ${PACKAGE_NAME}Config
     RUNTIME DESTINATION ${CORE_INSTALL_PATH}
     ARCHIVE DESTINATION lib
     COMPONENT qflow
     )
-install(FILES ${CORE_HEADERS} DESTINATION include COMPONENT qflow)
+install(FILES ${CORE_HEADERS} DESTINATION include/${PACKAGE_NAME} COMPONENT qflow)
 install(EXPORT ${PACKAGE_NAME}Config
     NAMESPACE QFlow::
     DESTINATION lib/cmake/${PACKAGE_NAME}
