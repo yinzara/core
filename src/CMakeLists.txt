@@ -38,13 +38,14 @@ target_link_libraries(core
     $<$<BOOL:${WIN32}>:Pdh>
     )
 
-set(CORE_INSTALL_PATH "plugins/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
+set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
 
+set(PACKAGE_NAME "QFlowCore")
 install(TARGETS core
-    EXPORT coreConfig
+    EXPORT ${PACKAGE_NAME}Config
     RUNTIME DESTINATION ${CORE_INSTALL_PATH}
     ARCHIVE DESTINATION lib
     COMPONENT qflow
     )
-install(EXPORT coreConfig DESTINATION lib/cmake)
+install(EXPORT ${PACKAGE_NAME}Config DESTINATION lib/cmake/${PACKAGE_NAME})
 install(FILES qmldir plugins.qmltypes DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
