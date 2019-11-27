@@ -39,9 +39,10 @@ target_link_libraries(core
 
 set_target_properties(core PROPERTIES
     QMLModulePath ${CMAKE_INSTALL_PREFIX}/modules
+    QMLModuleName QFlow.Core
     )
 set_target_properties(core PROPERTIES
-    EXPORT_PROPERTIES "QMLModulePath"
+    EXPORT_PROPERTIES QMLModulePath QMLModuleName
     )
 
 set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
