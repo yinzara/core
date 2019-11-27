@@ -42,7 +42,7 @@ set_target_properties(core PROPERTIES
     QMLModuleName QFlow.Core
     )
 set_target_properties(core PROPERTIES
-    EXPORT_PROPERTIES QMLModulePath QMLModuleName
+    EXPORT_PROPERTIES "QMLModulePath;QMLModuleName"
     )
 
 set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
