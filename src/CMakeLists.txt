@@ -1,38 +1,61 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.12.4)
+
 project(core)
-add_definitions(-DCORE_LIBRARY)
-file(GLOB_RECURSE DATABASE_SRCS
-         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-         ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-set(CMAKE_AUTOMOC ON)
+
+set(PACKAGE_NAME "QFlowCore")
 
 set(QT_MIN_VERSION "5.6.0")
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED
+    Core
+    Qml
+    )
 
-if(DEFINED QTDIR${_lib_suffix})
-	list(APPEND CMAKE_PREFIX_PATH "${QTDIR${_lib_suffix}}")
-elseif(DEFINED QTDIR)
-	list(APPEND CMAKE_PREFIX_PATH "${QTDIR}")
-elseif(DEFINED ENV{QTDIR${_lib_suffix}})
-	list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR${_lib_suffix}}")
-elseif(DEFINED ENV{QTDIR})
-	list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR}")
-endif()
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Core Qml)
-include_directories(${Qt5Qml_PRIVATE_INCLUDE_DIRS})
+file(GLOB_RECURSE CORE_SOURCES *.cpp)
+file(GLOB_RECURSE CORE_HEADERS *.h)
+add_library(core SHARED ${CORE_SOURCES})
+set_target_properties(core PROPERTIES CXX_STANDARD 14)
+target_compile_definitions(core PUBLIC CORE_LIBRARY)
+# Doesn't work because it includes the project prefix for some reason...
+#target_include_directories(core PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR} ${Qt5Qml_PRIVATE_INCLUDE_DIRS}>
+#    $<INSTALL_INTERFACE:include>
+#    )
+set_target_properties(core PROPERTIES
+    INCLUDE_DIRECTORIES "${Qt5Qml_PRIVATE_INCLUDE_DIRS}"
+    INTERFACE_INCLUDE_DIRECTORIES "${Qt5Qml_PRIVATE_INCLUDE_DIRS}"
+    )
+target_include_directories(core PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include/${PACKAGE_NAME}>
+    )
+target_link_libraries(core
+    Qt5::Core
+    Qt5::Qml
+    $<$<BOOL:${WIN32}>:Pdh>
+    )
 
-add_library(core SHARED ${DATABASE_SRCS} "functor.h")
-set_property(TARGET core PROPERTY CXX_STANDARD 14)
-target_include_directories (core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(core PROPERTIES
+    QMLModulePath ${CMAKE_INSTALL_PREFIX}/modules
+    QMLModuleName QFlow.Core
+    )
+set_target_properties(core PROPERTIES
+    EXPORT_PROPERTIES "QMLModulePath;QMLModuleName"
+    )
 
-target_link_libraries(core Qt5::Core Qt5::Qml)
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    target_link_libraries(core Pdh)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-set(CORE_INSTALL_PATH "plugins/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
-install (TARGETS core DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
-install (FILES qmldir DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
+set(CORE_INSTALL_PATH "modules/QFlow/Core" CACHE PATH "qFlow Core Library Install Path")
+
+install(TARGETS core
+    EXPORT ${PACKAGE_NAME}Config
+    RUNTIME DESTINATION ${CORE_INSTALL_PATH}
+    ARCHIVE DESTINATION lib
+    COMPONENT qflow
+    )
+install(FILES ${CORE_HEADERS} DESTINATION include/${PACKAGE_NAME} COMPONENT qflow)
+install(EXPORT ${PACKAGE_NAME}Config
+    NAMESPACE QFlow::
+    DESTINATION lib/cmake/${PACKAGE_NAME}
+    )
+install(FILES qmldir plugins.qmltypes DESTINATION ${CORE_INSTALL_PATH} COMPONENT qflow)
